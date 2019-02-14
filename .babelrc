@@ -28,13 +28,13 @@
     "@babel/plugin-proposal-export-namespace-from",
     "@babel/plugin-proposal-throw-expressions",
     [
-      "babel-plugin-root-import", 
+      "babel-plugin-root-import",
       {
         "paths": [
           {
             "rootPathPrefix": "~",
             "rootPathSuffix": "src/core"
-          }, 
+          },
           {
             "rootPathPrefix": "&",
             "rootPathSuffix": "src/modules"

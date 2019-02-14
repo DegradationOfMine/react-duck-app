@@ -6,9 +6,12 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>React Duck App</title>
     </head>
-    <body id="app">
+    <body>
+        <div id="app"></div>
         <noscript>
             You need to enable JavaScript to run this app.
         </noscript>
     </body>
+    <!-- inline webpack manifest -->
+    <%= htmlWebpackPlugin.files.webpackManifest %>
 </html>
