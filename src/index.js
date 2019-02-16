@@ -12,7 +12,8 @@ import configureStore from "./modules/App/store";
 //
 import './index.scss'
 const store = configureStore();
-
+console.log(1);
+throw new Error('lel');
 ReactDOM.render(
     <Provider store={store}>
         <div>test</div>

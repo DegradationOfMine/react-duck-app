@@ -1,36 +1,19 @@
 const path = require('path');
 const webpack = require('webpack');
-const Visualizer = require('webpack-visualizer-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
-//
 const {getIfUtils, removeEmpty} = require('webpack-config-utils');
+//
+const {defineVars} = require('./src/core/utils/webpack')
 const dotenv = require('dotenv').config({path: __dirname + '/.env', systemvars: true});
 const {ifProduction, ifNotProduction, ifDevelopment} = getIfUtils(process.env);
 
 const directory = process.env.ROOT_PATH === undefined || process.env.ROOT_PATH === '/' ? '/' : `/${process.env.ROOT_PATH}/`;
 const server = `http://${dotenv.parsed.APP_WEBPACK_HOST}:${dotenv.parsed.APP_WEBPACK_PORT}`;
-
-const defineVars = () => {
-    const env = dotenv.parsed;
-    const output = {};
-
-    output['NODE_ENV'] = ifProduction('"production"', '"development"');
-
-    Object
-        .keys(env)
-        .forEach(key => {
-            if (key.startsWith('APP_')) {
-                output[key] = `"${env[key] || ''}"`
-            }
-        });
-
-    return output;
-}
 
 module.exports = {
     mode: ifProduction('production', 'development'),
@@ -228,18 +211,10 @@ module.exports = {
     },
     plugins: removeEmpty([
         // share some system and env vars with the build
-        new webpack.DefinePlugin(defineVars()),
-        new webpack.LoaderOptionsPlugin({
-            minimize: ifProduction(),
-            debug: ifNotProduction(),
-        }),
+        new webpack.DefinePlugin(defineVars(dotenv.parsed, ifProduction())),
         ifDevelopment(new webpack.HotModuleReplacementPlugin()),
         // allow hot module replacement
         ifDevelopment(new webpack.HashedModuleIdsPlugin()),
-        // show some statistic
-        ifDevelopment(new Visualizer({
-            filename: path.resolve(__dirname, 'src/public/statistics.html')
-        })),
         // html optimization and minification
         new HtmlWebpackPlugin({
             chunksSortMode: 'dependency',
@@ -256,10 +231,9 @@ module.exports = {
             })
         }),
         // css optimization and minification
-        new MiniCssExtractPlugin({
-            filename: "style.[contenthash].css"
-        }),
+        new MiniCssExtractPlugin({filename: "style.[contenthash].css"}),
         new OptimizeCssAssetsPlugin(),
+        // copy static files to build
         new CopyWebpackPlugin([{
             from: path.resolve(__dirname, 'src/public/assets'),
             to: path.resolve(__dirname, 'build/assets'),
