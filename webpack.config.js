@@ -8,19 +8,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 //
-const {
-    getIfUtils,
-    removeEmpty
-} = require('webpack-config-utils');
-const dotenv = require('dotenv').config({
-    path: __dirname + '/.env',
-    systemvars: true
-});
-const {
-    ifProduction,
-    ifNotProduction,
-    ifDevelopment
-} = getIfUtils(process.env);
+const {getIfUtils, removeEmpty} = require('webpack-config-utils');
+const dotenv = require('dotenv').config({path: __dirname + '/.env', systemvars: true});
+const {ifProduction, ifNotProduction, ifDevelopment} = getIfUtils(process.env);
+
 const directory = process.env.ROOT_PATH === undefined || process.env.ROOT_PATH === '/' ? '/' : `/${process.env.ROOT_PATH}/`;
 const server = `http://${dotenv.parsed.APP_WEBPACK_HOST}:${dotenv.parsed.APP_WEBPACK_PORT}`;
 
@@ -44,18 +35,18 @@ const defineVars = () => {
 module.exports = {
     mode: ifProduction('production', 'development'),
     entry: {
-        app: removeEmpty([
+        main: removeEmpty([
             "@babel/polyfill",
             // fix HMR in IE
-            ifNotProduction('eventsource-polyfill'),
+            ifDevelopment('eventsource-polyfill'),
             // bundle the client for webpack-dev-server
             // and connect to the provided endpoint
             // it enable HMR from external devices
-            ifNotProduction(`webpack-dev-server/client?${server}`),
+            ifDevelopment(`webpack-dev-server/client?${server}`),
             "./src/index.js"
         ]),
     },
-    devtool: ifDevelopment('cheap-module-source-map', false),
+    devtool: ifDevelopment("cheap-module-source-map", false),
     devServer: {
         disableHostCheck: true,
         host: dotenv.parsed.APP_WEBPACK_HOST,
@@ -67,16 +58,15 @@ module.exports = {
         overlay: true,
         compress: true,
         hot: ifDevelopment(true, false),
-        publicPath: '/',
+        publicPath: ifProduction('/', server),
         contentBase: path.resolve(__dirname, 'src/public'),
         watchContentBase: true,
-        stats: 'minimal'
     },
     output: {
         publicPath: ifDevelopment(server, directory),
         filename: ifProduction('assets/js/[name].[chunkhash:8].js', '[name].js'),
         chunkFilename: ifProduction('assets/js/[name].[chunkhash:8].js', '[name].js'),
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'build'),
         pathinfo: ifNotProduction()
     },
     resolve: {
@@ -96,8 +86,8 @@ module.exports = {
                     enforce: true,
                     reuseExistingChunk: true
                 },
-                default: {
-                    name: "commons",
+                main: {
+                    name: "main",
                     test: /[\\/]src[\\/]/,
                     chunks: "async",
                     priority: -20,
@@ -107,7 +97,8 @@ module.exports = {
                     maxAsyncRequests: 5,
                     maxInitialRequests: 3,
                     reuseExistingChunk: true
-                }
+                },
+                default: false
             }
         },
         minimize: ifProduction(true, false),
@@ -265,11 +256,13 @@ module.exports = {
             })
         }),
         // css optimization and minification
-        new MiniCssExtractPlugin(),
+        new MiniCssExtractPlugin({
+            filename: "style.[contenthash].css"
+        }),
         new OptimizeCssAssetsPlugin(),
         new CopyWebpackPlugin([{
             from: path.resolve(__dirname, 'src/public/assets'),
-            to: path.resolve(__dirname, 'dist/assets'),
+            to: path.resolve(__dirname, 'build/assets'),
         }, ]),
         ifProduction(new InlineManifestWebpackPlugin())
     ])
