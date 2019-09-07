@@ -1,3 +1,5 @@
+const dotenv = require('dotenv').config();
+
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -8,8 +10,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const {getIfUtils, removeEmpty} = require('webpack-config-utils');
 //
-const {defineVars} = require('./src/core/utils/webpack')
-const dotenv = require('dotenv').config({path: __dirname + '/.env', systemvars: true});
+const {defineVars} = require('./src/core/utils/webpack');
 const {ifProduction, ifNotProduction, ifDevelopment} = getIfUtils(process.env);
 
 const directory = process.env.ROOT_PATH === undefined || process.env.ROOT_PATH === '/' ? '/' : `/${process.env.ROOT_PATH}/`;
@@ -20,16 +21,12 @@ module.exports = {
     entry: {
         main: removeEmpty([
             "@babel/polyfill",
-            // fix HMR in IE
             ifDevelopment('eventsource-polyfill'),
-            // bundle the client for webpack-dev-server
-            // and connect to the provided endpoint
-            // it enable HMR from external devices
             ifDevelopment(`webpack-dev-server/client?${server}`),
-            "./src/index.js"
+            "./src/index.ts"
         ]),
     },
-    devtool: ifDevelopment("cheap-module-source-map", false),
+    devtool: ifDevelopment("source-map", false),
     devServer: {
         disableHostCheck: true,
         host: dotenv.parsed.APP_WEBPACK_HOST,
@@ -53,7 +50,7 @@ module.exports = {
         pathinfo: ifNotProduction()
     },
     resolve: {
-        extensions: ['.js', '.jsx'],
+        extensions: [".ts", ".tsx"],
         modules: ['node_modules']
     },
     optimization: {
@@ -111,16 +108,26 @@ module.exports = {
             })
         ],
     },
+    externals: {
+        "react": "React",
+        "react-dom": "ReactDOM"
+    },
     module: {
-        rules: [{
-                test: /\.(js|jsx)$/,
+        rules: [
+            {
+                test: /\.ts(x?)$/,
                 exclude: /node_modules/,
-                use: [{
-                    loader: 'babel-loader',
-                    options: {
-                        cacheDirectory: ifNotProduction()
+                use: [
+                    {
+                        loader: "ts-loader"
                     }
-                }],
+                ]
+            },
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            {
+                enforce: "pre",
+                test: /\.js$/,
+                loader: "source-map-loader"
             },
             {
                 test: /\.(sc|c)ss$/,
