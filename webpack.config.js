@@ -20,13 +20,12 @@ module.exports = {
     mode: ifProduction('production', 'development'),
     entry: {
         main: removeEmpty([
-            "@babel/polyfill",
             ifDevelopment('eventsource-polyfill'),
             ifDevelopment(`webpack-dev-server/client?${server}`),
-            "./src/index.ts"
+            "./src/index.tsx"
         ]),
     },
-    devtool: ifDevelopment("source-map", false),
+    devtool: ifDevelopment("inline-source-map", false),
     devServer: {
         disableHostCheck: true,
         host: dotenv.parsed.APP_WEBPACK_HOST,
@@ -50,8 +49,12 @@ module.exports = {
         pathinfo: ifNotProduction()
     },
     resolve: {
-        extensions: [".ts", ".tsx"],
-        modules: ['node_modules']
+        extensions: [".ts", ".tsx", ".js", ".jsx"],
+        modules: ['node_modules'],
+        alias: {
+            "@modules": path.resolve(__dirname, 'src/modules'),
+            "@core": path.resolve(__dirname, 'src/core')
+        }
     },
     optimization: {
         runtimeChunk: "single",
@@ -108,10 +111,6 @@ module.exports = {
             })
         ],
     },
-    externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
-    },
     module: {
         rules: [
             {
@@ -122,12 +121,6 @@ module.exports = {
                         loader: "ts-loader"
                     }
                 ]
-            },
-            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-            {
-                enforce: "pre",
-                test: /\.js$/,
-                loader: "source-map-loader"
             },
             {
                 test: /\.(sc|c)ss$/,
