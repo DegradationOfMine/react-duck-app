@@ -1,3 +1,4 @@
 // Contain all routes in your app as constants
-
-export const BASE_ROOT = '/';
+enum Routes {
+    BASE_ROOT = '/',
+}

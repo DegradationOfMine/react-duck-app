@@ -1,7 +1,9 @@
-import { combineReducers } from "redux";
+import {makeReducer} from '@core/utils/redux'
 //
-import {makeReducer} from '../../../core/utils/redux'
-//
-export default combineReducers({
-    app: makeReducer()
+
+export const INITIAL_STATE = {
+
+};
+export default makeReducer(INITIAL_STATE, {
+
 });
