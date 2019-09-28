@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": false,
+    "removeComments": true,
+    "baseUrl": ".",
+    "paths": {
+      "@modules*": [
+        "src/modules*"
+      ],
+      "@core*": [
+        "src/core*"
+      ]
+    },
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "es2018",
+      "es2019",
+      "dom"
+    ]
+  }
+}
