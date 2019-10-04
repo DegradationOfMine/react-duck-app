@@ -1,6 +1,6 @@
 import {Logic} from "redux-logic";
 
-export default class LogicContainer {
+class LogicContainer {
     protected static instance: LogicContainer;
     //
     protected static logics: {[k:string]: Logic[]};
@@ -28,7 +28,7 @@ export default class LogicContainer {
         LogicContainer.logics = {...obj};
     }
 
-    public getLogics(loadOrder: string[] = []): Logic[] {
+    public all(loadOrder: string[] = []): Logic[] {
         const order = 0 === loadOrder.length
             ? Object.keys(LogicContainer.logics)
             : loadOrder;
@@ -44,3 +44,5 @@ export default class LogicContainer {
         return logics;
     }
 }
+
+export default LogicContainer.new;

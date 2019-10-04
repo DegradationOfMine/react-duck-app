@@ -8,9 +8,6 @@ import logics from './logics/index';
 //
 export const MODULE = 'app';
 //
-
-export default () => {
-    RouteContainer.new.put(MODULE, routes);
-    LogicContainer.new.put(MODULE, logics);
-    ReducerContainer.new.put(MODULE, reducers);
-};
+RouteContainer.put(MODULE, routes);
+LogicContainer.put(MODULE, logics);
+ReducerContainer.put(MODULE, reducers);

@@ -1,6 +1,6 @@
 import {ReducersMapObject} from "redux";
 
-export default class ReducerContainer {
+class ReducerContainer {
     protected static instance: ReducerContainer;
     //
     protected static reducers: {[k:string]: object};
@@ -28,7 +28,7 @@ export default class ReducerContainer {
         ReducerContainer.reducers = {...obj};
     }
 
-    public getReducers(loadOrder: string[] = []): ReducersMapObject {
+    public all(loadOrder: string[] = []): ReducersMapObject {
         let reducers: {[k: string]: any} = {};
 
         if (0 < loadOrder.length) {
@@ -45,3 +45,5 @@ export default class ReducerContainer {
         return reducers;
     }
 }
+
+export default ReducerContainer.new;
