@@ -1,26 +1,21 @@
-// import './index.scss'
+import './index.scss'
 //
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Router } from "react-router";
 import { Provider } from 'react-redux';
-import { renderRoutes } from "react-router-config";
 import { createBrowserHistory } from "history";
+import { renderRoutes } from "react-router-config";
 //
-import App from '@modules/App';
-App();
+import "./bootstrap";
 //
-import configureStore from "@core/store";
-import RouteContainer from "@core/containers/RouteContainer";
-
-
-const store = configureStore();
-const routes = RouteContainer.new.getRoutes();
+import store from "@core/store";
+import routes from "@core/containers/RouteContainer";
 
 render(
     <Provider store={store}>
         <Router history={createBrowserHistory()}>
-            {renderRoutes(routes)}
+            {renderRoutes(routes.all())}
         </Router>
     </Provider>,
     document.getElementById('app')

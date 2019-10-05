@@ -1,5 +1,3 @@
 export default interface State {
-    [key: string]: {
-        [key: string]: any
-    }
+    [key: string]: string|null|number|object
 }

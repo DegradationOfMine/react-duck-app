@@ -1,4 +1,4 @@
-export default class RouteContainer {
+class RouteContainer {
     protected static instance: RouteContainer;
     //
     protected static routes: {[k:string]: object[]};
@@ -27,7 +27,7 @@ export default class RouteContainer {
         RouteContainer.routes = {...obj};
     }
 
-    public getRoutes(loadOrder: string[] = []) {
+    public all(loadOrder: string[] = []) {
         const order = 0 === loadOrder.length
             ? Object.keys(RouteContainer.routes)
             : loadOrder;
@@ -43,3 +43,5 @@ export default class RouteContainer {
         return routes;
     }
 }
+
+export default RouteContainer.new;
