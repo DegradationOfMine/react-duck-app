@@ -45,7 +45,7 @@
     "webpack-dev-server": "^3.8.1"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "history": "^4.9.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
